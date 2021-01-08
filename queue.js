@@ -64,6 +64,7 @@ class Queue {
         const [taskDequeued] = this.tasks.filter(task => task.id === taskId);
         this.tasks = this.tasks.filter(task=>task.id!==taskId);
         // this.emit(`${taskDequeued.id}`,result);
+        
         return { taskDequeued, result };
     }
 
