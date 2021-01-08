@@ -1,5 +1,4 @@
 require('dotenv').config()
-const EventEmitter = require('events');
 
 const { v4: uuidv4 } = require('uuid');
 const { pushError, noItemToDequeueError, success } = require('./constants');
@@ -25,10 +24,9 @@ class Task {
     }
 }
 
-class Queue extends EventEmitter{
+class Queue {
     tasks = [];
     constructor({ name, topic }) {
-        super();
         this.id = uuidv4();
         this.topic = topic;
         this.name = name;
@@ -57,26 +55,33 @@ class Queue extends EventEmitter{
         return { id:task.id };
     }
 
-    async dequeue() {
+    async dequeue({taskId}) {
         if (this.isEmpty()) {
             return noItemToDequeueError;
         }
-        const nextTask=this.getNextTask();
-        const result=await runTask({taskId:nextTask.id});
-        await deleteFolder({ folderName: nextTask.id });
-        const taskDequeued = this.tasks.shift();
-        this.once(`${taskDequeued.id}`,[result]);
+        const result=await runTask({taskId});
+        await deleteFolder({ folderName: taskId });
+        const [taskDequeued] = this.tasks.filter(task => task.id === taskId);
+        this.tasks = this.tasks.filter(task=>task.id!==taskId);
+        // this.emit(`${taskDequeued.id}`,result);
         return { taskDequeued, result };
     }
 
-    static async delete({taskId}) {
-       await deleteFolder({folderName:taskId})
+    static async delete({ taskId }) {
+            await deleteFolder({ folderName: taskId })
+     
     }
 }
 
-const queue = new Queue({ name: "javascriptQueue", topic: "js" });
-const task = new Task({ source: "console.log(9)", language: 'js', testSchema: "asas" });
-const { error, id }=queue.enqueue(task);
 
-queue.on(`${task.id}`, (res)=>console.log(res))
-
+module.exports = { Task, Queue }
+//tests
+// const queue = new Queue({ name: "javascriptQueue", topic: "js" });
+// const task = new Task({ source: "console.log(9)", language: 'jsk', testSchema: "asas" });
+// queue.enqueue(task).then(({ error, id }) => {
+//     if (error) {
+//         console.log({ error });
+//         return
+//     }
+//     queue.dequeue({ taskId: id }).then(res=>console.log(res));
+// });
