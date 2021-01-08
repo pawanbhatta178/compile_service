@@ -16,7 +16,7 @@ const writeToFile = async({ data, fileName, folderName }) => {
         writableData = JSON.stringify(nothingToWriteError)
     }
     else {
-        writableData = JSON.stringify(data);
+        writableData =(typeof data==="object") ? JSON.stringify(data):data;
     }
     try {
        makeDir(folderName);

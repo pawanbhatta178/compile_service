@@ -1,8 +1,8 @@
-POST http://localhost:2000/
+POST http://localhost:2000/compile
 Content-Type: application/json
 
 {
     "source":"function add(a,b){return a+b}; module.exports=add",
     "lang":"js",
-    "questionId":"jsd"
+    "questionId":"3"
 }

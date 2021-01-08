@@ -7,5 +7,8 @@ module.exports = {
     }, 
     success: {
         success:"Done!"
+    }, 
+    cannotFindError: {
+        error:"Cannot find the item that you requested"
     }
 }
