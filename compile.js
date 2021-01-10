@@ -2,7 +2,6 @@ const { Task, Queue } = require("./queue");
 const {Test} = require("./entities/Test");
 const { cannotFindError } = require("./constants");
 const jsQueue = new Queue({name:"javascriptQueue", topic:"js"});
-const fs=require('fs').promises;
 
 const getTestSchemaInFormat = (tests) => {
     return tests.map(test => {
@@ -37,7 +36,7 @@ const compile = async (req, res) => {
     if (error) {
         return res.json({ error });
     }
-    console.log(result);
+    console.log(result)
     res.send(result);
 }
 
