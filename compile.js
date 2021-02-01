@@ -73,14 +73,39 @@ const compile = async (req, res) => {
       submittedData = await Submissions({ ...detailedObject, source }).save();
       detailedObject["submittedAt"] = submittedData[0]?.submitted_at;
       if (submittedData.length === 1) {
-        const ranked = await SuccessfulSubmission({
-          subId: submittedData[0].id,
-          challengeId: questionId,
-          userId,
-        }).save();
-        if (ranked.length === 1) {
-          //ranked
-          detailedObject["rankedAt"] = ranked[0]?.updated_at;
+        const previousRank = await SuccessfulSubmission({}).findAllWith({
+          user_id: userId,
+          challenge_id: questionId,
+        });
+        if (previousRank.length === 1) {
+          //was already ranked
+          const [previousSubmission] = await Submissions({}).findAllWith({
+            id: previousRank[0].submission_id,
+          });
+          if (
+            submittedData[0].time_taken < previousSubmission.time_taken &&
+            submittedData[0].word_count < previousSubmission.word_count
+          ) {
+            const updatedSubmission = await SuccessfulSubmission(
+              {}
+            ).updateOneWith(
+              { user_id: userId, challenge_id: questionId },
+              { submission_id: submittedData[0].id }
+            );
+            if (updatedSubmission.length === 1) {
+              detailedObject["ranked"] = true;
+            }
+          }
+        } else {
+          //wasnt ranked
+          const ranked = await SuccessfulSubmission({
+            subId: submittedData[0].id,
+            challengeId: questionId,
+            userId,
+          }).save();
+          if (ranked.length === 1) {
+            detailedObject["ranked"] = true;
+          }
         }
       }
     } else {
