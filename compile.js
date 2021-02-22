@@ -35,7 +35,9 @@ const getTestSchemaInFormat = (tests) => {
 
 const compile = async (req, res) => {
   console.log(req.body);
-  const { source, lang, questionId, userId } = req.body;
+  console.log(req.user);
+  const { id: userId } = req.user;
+  const { source, lang, questionId } = req.body;
   const tests = await Test({}).findAllWith({ challenge_id: questionId });
   if (tests.length === 0) {
     return res.json(cannotFindError);
