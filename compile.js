@@ -71,7 +71,11 @@ const compile = async (req, res) => {
     );
     let submittedData;
     if (passedAllTests === true) {
-      submittedData = await Submissions({ ...detailedObject, source }).save();
+      submittedData = await Submissions({
+        ...detailedObject,
+        testResult: JSON.stringify(detailedObject.testResult),
+        source,
+      }).save();
       detailedObject["submittedAt"] = submittedData[0]?.submitted_at;
       detailedObject["submissionId"] = submittedData[0]?.id;
       detailedObject["code"] = submittedData[0]?.code;
@@ -112,7 +116,10 @@ const compile = async (req, res) => {
         }
       }
     } else {
-      submittedData = await Submissions({ ...detailedObject }).save();
+      submittedData = await Submissions({
+        ...detailedObject,
+        testResult: JSON.stringify(detailedObject.testResult),
+      }).save();
       detailedObject["submittedAt"] = submittedData[0]?.submitted_at;
       detailedObject["submissionId"] = submittedData[0]?.id;
     }
