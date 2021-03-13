@@ -79,6 +79,7 @@ const compile = async (req, res) => {
       detailedObject["submittedAt"] = submittedData[0]?.submitted_at;
       detailedObject["submissionId"] = submittedData[0]?.id;
       detailedObject["code"] = submittedData[0]?.code;
+      detailedObject["passedAllTests"] = true;
       if (submittedData.length === 1) {
         const previousRank = await SuccessfulSubmission({}).findAllWith({
           user_id: userId,
@@ -122,6 +123,7 @@ const compile = async (req, res) => {
       }).save();
       detailedObject["submittedAt"] = submittedData[0]?.submitted_at;
       detailedObject["submissionId"] = submittedData[0]?.id;
+      detailedObject["passedAllTests"] = false;
     }
   }
   console.log(detailedObject);
