@@ -29,6 +29,7 @@ const getTestSchemaInFormat = (tests) => {
       argSize: test.arg_size,
       argType: test.arg_type,
       returnType: test.return_type,
+      hidden: test.hidden,
     };
   });
 };
@@ -42,6 +43,7 @@ const compile = async (req, res) => {
   if (tests.length === 0) {
     return res.json(cannotFindError);
   }
+
   const testSchema = getTestSchemaInFormat(tests);
   const task = new Task({ source, language: lang, testSchema });
   // await fs.writeFile(`./code.js`, source);
@@ -50,6 +52,8 @@ const compile = async (req, res) => {
     return res.json({ error: enqueued.error });
   }
   const { error, result } = await jsQueue.dequeue({ taskId: enqueued.id });
+  console.log(result);
+
   if (error) {
     return res.json({ error });
   }
